@@ -94,7 +94,6 @@ class Slider:
         self.slide_length = self.max_x - self.min_x
         self.controller_x = left_x + width // 12
         self.controller_y = middle_y
-        self.slide_amount = width // 20
         self.min_value, self.max_value = min_value, max_value
         self.value_gap = self.max_value - self.min_value
         self.bar_rect = pygame.rect.Rect(left_x, middle_y - width // 24, width, width // 12)

@@ -1,5 +1,4 @@
 import pygame
-from sys import exit
 import math
 
 pygame.init()
@@ -165,7 +164,6 @@ def convert_into_screen_coordinates(x, y):
 
 
 alpha_1, alpha_2, alpha_3 = 90, 90, 90
-coefficient_1, coefficient_2, coefficient_3 = 1, 1, 1
 
 animate_on = False
 
@@ -180,7 +178,6 @@ while True:
 
     if button_reset.is_clicked():
         alpha_1, alpha_2, alpha_3 = 90, 90, 90
-        coefficient_1, coefficient_2, coefficient_3 = 1, 1, 1
         animate_on = False
     if button_start_stop.is_clicked():
         if animate_on:
@@ -223,60 +220,36 @@ while True:
     if animate_on:
 
         alpha_1 -= speed_1
-        if alpha_1 <= -90:
-            alpha_1 = 90 + alpha_1 % -90
-            if coefficient_1 == 1:
-                coefficient_1 = -1
-            else:
-                coefficient_1 = 1
-
         alpha_2 -= speed_2
-        if alpha_2 <= -90:
-            alpha_2 = 90 + alpha_2 % -90
-            if coefficient_2 == 1:
-                coefficient_2 = -1
-            else:
-                coefficient_2 = 1
-
         alpha_3 -= speed_3
-        if alpha_3 <= -90:
-            alpha_3 = 90 + alpha_3 % -90
-            if coefficient_3 == 1:
-                coefficient_3 = -1
-            else:
-                coefficient_3 = 1
 
-    t_1 = math.tan(alpha_1 * math.pi / 180)
-    t_2 = math.tan(alpha_2 * math.pi / 180)
-    t_3 = math.tan(alpha_3 * math.pi / 180)
+    x_1 = math.cos(alpha_1 * math.pi / 180) * (distance_2 + distance_3)
+    x_2 = math.cos(alpha_2 * math.pi / 180) * distance_2
+    x_3 = math.cos(alpha_3 * math.pi / 180) * distance_3
 
-    a_1 = int((distance_2 + distance_3) / (t_1 ** 2 + 1) ** .5) * coefficient_1
-    a_2 = int(distance_2 / (t_2 ** 2 + 1) ** .5) * coefficient_2
-    a_3 = int(distance_3 / (t_3 ** 2 + 1) ** .5) * coefficient_3
+    y_1 = math.sin(alpha_1 * math.pi / 180) * (distance_2 + distance_3)
+    y_2 = math.sin(alpha_2 * math.pi / 180) * distance_2
+    y_3 = math.sin(alpha_3 * math.pi / 180) * distance_3
 
-    b_1 = int(((distance_2 + distance_3) / (t_1 ** 2 + 1) ** .5) * t_1) * coefficient_1
-    b_2 = int((distance_2 / (t_2 ** 2 + 1) ** .5) * t_2) * coefficient_2
-    b_3 = int((distance_3 / (t_3 ** 2 + 1) ** .5) * t_3) * coefficient_3
+    old_x_3, old_y_3 = x_3, y_3
+    x_3 += x_2
+    y_3 += y_2
+    x_2 += x_1
+    y_2 += y_1
+    x_1 += old_x_3
+    y_1 += old_y_3
 
-    old_a_3, old_b_3 = a_3, b_3
-    a_3 += a_2
-    b_3 += b_2
-    a_2 += a_1
-    b_2 += b_1
-    a_1 += old_a_3
-    b_1 += old_b_3
-
-    a_1, b_1 = convert_into_screen_coordinates(a_1, b_1)
-    a_2, b_2 = convert_into_screen_coordinates(a_2, b_2)
-    a_3, b_3 = convert_into_screen_coordinates(a_3, b_3)
+    x_1, y_1 = convert_into_screen_coordinates(x_1, y_1)
+    x_2, y_2 = convert_into_screen_coordinates(x_2, y_2)
+    x_3, y_3 = convert_into_screen_coordinates(x_3, y_3)
 
     # # # # # # #
 
     screen.fill(BG_COLOR)
 
-    pygame.draw.circle(screen, COLOR_1, (a_1, b_1), RADIUS_SIZE_1)
-    pygame.draw.circle(screen, COLOR_2, (a_2, b_2), RADIUS_SIZE_2)
-    pygame.draw.circle(screen, COLOR_3, (a_3, b_3), RADIUS_SIZE_3)
+    pygame.draw.circle(screen, COLOR_1, (x_1, y_1), RADIUS_SIZE_1)
+    pygame.draw.circle(screen, COLOR_2, (x_2, y_2), RADIUS_SIZE_2)
+    pygame.draw.circle(screen, COLOR_3, (x_3, y_3), RADIUS_SIZE_3)
 
     pygame.draw.rect(screen, PANEL_COLOR, panel_rect)
 
